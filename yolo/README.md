@@ -4,7 +4,7 @@
 
 ## 실행 준비
 
-라즈베리파이에 이 폴더를 복사하고, YOLO TFLite 모델 파일을 같은 폴더에 `best_float32.tflite` 이름으로 넣습니다.
+라즈베리파이에 이 폴더를 복사하고, YOLO TFLite 모델 파일을 같은 폴더에 `best_float32.tflite` 이름으로 넣습니다. - .pt라면 알아서 맞춰서 넣습니다.
 
 ```bash
 cd raspi_yolo_tflite_robot
@@ -28,3 +28,9 @@ python run_4wd_yolo_tflite.py
 현재 데이터셋이 `head`, `helmet`, `vest`만 포함한다면 진짜 사람 박스가 아니라 안전장비 관련 박스를 기준으로 따라갑니다.
 
 `person` 클래스까지 학습한 YOLO 모델을 쓰면 `config.py`의 `PERSON_CLASS_ID`를 해당 클래스 번호로 바꾸면 됩니다.
+
+txt 파일의 데이터 : 맨앞의 숫자로 판단
+
+0 = head
+1 = helmet
+2 = vest
