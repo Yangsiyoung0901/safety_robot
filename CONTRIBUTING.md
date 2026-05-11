@@ -9,49 +9,43 @@
 
 ```
 safety_robot/
+├── main.py              # 진입점 + 상태머신 + 경고 정책
+├── config.yaml          # 임계값, 핀 번호 등 전체 설정
 │
-├── main.py                  # 진입점 — 상태 머신 루프 실행
-├── config.yaml              # 내 PC/라즈베리파이 설정값 (git 제외, 직접 생성)
-├── config.example.yaml      # config.yaml 작성 예시 (이걸 복사해서 사용)
-├── README.md                # 프로젝트 소개 및 실행 방법
+├── hardware/
+│   ├── motor.py         # 모터 PWM 제어 + 자율 이동 로직
+│   └── output.py        # LED + 스피커 통합 경고 출력
 │
-├── hardware/                # 하드웨어 제어 (모터, 센서, LED, 스피커)
-│   ├── motor.py             # DC 모터 PWM 제어
-│   ├── line_sensor.py       # IR 라인 센서 읽기
-│   ├── led.py               # LED 경광등 제어
-│   └── speaker.py           # 음성 경고 출력
+├── vision/
+│   ├── camera.py        # picamera2 캡처 스트림
+│   └── detector.py      # Person / PPE / Danger 통합 파이프라인
 │
-├── vision/                  # AI 추론 파이프라인
-│   ├── camera.py            # picamera2 프레임 캡처
-│   ├── person_detector.py   # 사람 감지 (YOLOv5n TFLite)
-│   ├── ppe_classifier.py    # 안전모·조끼 분류 (MobileNetV2 TFLite)
-│   └── danger_zone.py       # 위험 표지 감지 + 근접 판정
+├── logger.py            # 이벤트 JSON 로그 + 스냅샷 저장
 │
-├── core/                    # 상태 관리 및 이벤트 처리
-│   ├── event_bus.py         # 스레드 간 이벤트 큐 (Thread-safe)
-│   ├── state_machine.py     # IDLE / DETECT / ALERT 상태 관리
-│   ├── line_tracer_ctrl.py  # 라인 추종 제어 로직
-│   └── alert_manager.py     # 경고 정책 + 쿨다운 관리
+├── models/              # Pi5 탑재용 TFLite 모델 (추론 전용)
+│   ├── person_detect.tflite
+│   ├── ppe_detect.tflite
+│   └── danger_detect.tflite
 │
-├── logger/                  # 로그 및 스냅샷 저장
-│   ├── event_logger.py      # JSON 형식 이벤트 로그 기록
-│   └── snapshot.py          # 위반 발생 시 프레임 이미지 저장
-│
-├── models/                  # TFLite 모델 파일 (Git 제외)
-│   └── .gitkeep             # ← 폴더 유지용, 모델은 Google Drive에서 받을 것
-│
-├── assets/                  # 경고 음성 WAV 파일
+├── assets/              # 경고음 WAV
 │   ├── no_helmet_ko.wav
 │   ├── no_vest_ko.wav
 │   └── danger_zone_ko.wav
 │
-├── logs/                    # 이벤트 로그 + 스냅샷 저장 폴더 (Git 제외)
-│   └── .gitkeep
+├── training/            # 학습 코드 (개발 PC / Colab 전용, Pi5 미탑재)
+│   ├── train_ppe.py
+│   ├── train_danger.py
+│   ├── convert_tflite.py
+│   └── dataset/
+│       ├── ppe/         # images/ + labels/ (YOLO 형식)
+│       └── danger/      # images/ + labels/ (YOLO 형식)
 │
-└── tests/                   # 단위 테스트
-    ├── test_line_sensor.py
-    ├── test_ppe_classifier.py
-    └── test_event_bus.py
+├── logs/                # 런타임 생성
+│   └── snapshots/
+│
+└── tests/
+    ├── test_detector.py
+    └── test_motor.py
 ```
 
 ---
