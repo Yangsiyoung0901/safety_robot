@@ -9,11 +9,10 @@
 # =============================================================
 #
 # safety_robot/
-# ├── main.py                  ← 진입점. 카메라 + 감지 + 화면 출력 루프 (PC 테스트용)
-# ├── config.yaml              ← 모든 설정값 (임계값, 모델 경로, 크롭 파라미터)
+# ├── config.yaml              ← 설정값 (임계값, 모델 경로, 크롭 파라미터)
+# ├── vision_README.py         ← 이 파일 (모듈 설명서)
 # └── vision/
 #     ├── __init__.py           ← 패키지 인식용 (비어있음)
-#     ├── camera.py             ← 웹캠 캡처 (Camera 클래스)
 #     └── detector.py           ← Person / PPE / Danger 통합 파이프라인
 
 # =============================================================
@@ -37,16 +36,15 @@
 # 매커니즘
 # =============================================================
 #
-# main.py에서 카메라, Detector를 초기화
-# config.yaml에서 모든 설정값을 읽어옴
+# 팀원 코드(safe_eye_monitor.py)가 메인 시스템이다.
+# 메인 시스템에서 카메라 프레임을 읽고, Detector.detect()에 전달한다.
 #
-# -> 카메라가 웹캠에서 프레임을 1장씩 읽음
 # -> 프레임을 Detector.detect()에 전달
 #
 #    Detector 내부 처리 순서 (detector.py):
 #    ┌─────────────────────────────────────────────────────────┐
 #    │ 1단계: YOLO Person Detection (공통)                     │
-#    │   - YOLOv5n 모델로 프레임에서 사람(class 0)을 감지     │
+#    │   - YOLO 모델로 프레임에서 사람(class 0)을 감지         │
 #    │   - 신뢰도 0.5 이상인 사람만 남김                       │
 #    │   - 너무 작은 bbox는 제외                               │
 #    │   - 왼쪽→오른쪽으로 정렬 (x1 기준)                     │
@@ -86,19 +84,12 @@
 #      - helmet_prob, vest_prob: 착용 확률값
 #      - in_danger: 위험 구역 근접 여부
 #      - method: "classification" / "od" / ""
-#
-# -> main.py에서 결과를 화면에 오버레이
-#    - person bbox + 번호 (왼쪽부터 #1, #2, ...)
-#    - 상체 크롭 영역 (classification일 때만 표시)
-#    - 착용=녹색, 미착용=주황
-#    - 현재 PPE 방식 표시 ("Classification (1명)" / "OD (2명+)")
-#    - FPS, 인원 수, 위반 수 표시
 
 # =============================================================
 # 팀원 코드(safe_eye_monitor.py)와의 연동
 # =============================================================
 #
-# 팀원 코드가 메인 시스템이고, 이 코드는 거기에 끼워넣는 모듈이다.
+# 팀원 코드가 메인 시스템이고, detector.py는 거기에 끼워넣는 모듈이다.
 #
 # 연동 방법:
 #   1. detector.py의 Detector를 팀원 코드에서 import
@@ -107,6 +98,11 @@
 #   4. det.helmet이 None이면 → 팀원 코드의 OD 결과로 채움
 #
 # 예시:
+#   from vision.detector import Detector, PersonDetection
+#
+#   cfg = yaml.safe_load(open("config.yaml"))
+#   detector = Detector(cfg)
+#
 #   detections = detector.detect(frame)
 #   for det in detections:
 #       if det.helmet is None:
@@ -116,15 +112,11 @@
 #           det.method = "od"
 
 # =============================================================
-# 실행 방법
+# 설치 및 설정
 # =============================================================
 #
 # 설치:
 #   pip install ultralytics opencv-python torch torchvision pyyaml
-#
-# 실행 (PC 테스트):
-#   cd safety_robot
-#   python main.py
 #
 # PPE Classification 모델 연결:
 #   config.yaml에서:
