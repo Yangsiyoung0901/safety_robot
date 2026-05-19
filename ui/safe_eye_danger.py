@@ -298,6 +298,7 @@ def detection_loop():
     # 클래스 ID 매핑
     helmet_class_ids = find_class_ids(ppe_model, {"helmet", "hardhat", "hard_hat", "safety_helmet"})
     vest_class_ids = find_class_ids(ppe_model, {"vest", "safety_vest", "safetyvest"})
+    ppe_class_ids = sorted(helmet_class_ids | vest_class_ids)
     person_class_ids = find_class_ids(person_model, {"person"}) if person_model else set()
 
     if person_model and not person_class_ids:
@@ -305,6 +306,7 @@ def detection_loop():
 
     if ppe_model:
         print("helmet ids:", helmet_class_ids, "vest ids:", vest_class_ids)
+        print("PPE filter ids:", ppe_class_ids)
 
     # ── [수정2] MBC 분류기 로드 (1명일 때 사용, TFLite/PyTorch 자동 선택) ──
     mbc_classifier = None
@@ -507,7 +509,7 @@ def detection_loop():
                 # MBC 실패 시 OD fallback에 쓸 수 있도록 PPE OD도 실행
                 if 0 not in cached_mbc_results and ppe_model is not None:
                     ppe_result = ppe_model.predict(
-                        source=frame, imgsz=YOLO_SIZE, conf=PPE_CONF, verbose=False
+                        source=frame, imgsz=YOLO_SIZE, conf=PPE_CONF, classes=ppe_class_ids, verbose=False
                     )[0]
                     helmets = []
                     vests = []
@@ -526,7 +528,7 @@ def detection_loop():
             elif use_od:
                 # OD 방식: YOLO PPE 모델
                 ppe_result = ppe_model.predict(
-                    source=frame, imgsz=YOLO_SIZE, conf=PPE_CONF, verbose=False
+                    source=frame, imgsz=YOLO_SIZE, conf=PPE_CONF, classes=ppe_class_ids, verbose=False
                 )[0]
                 helmets = []
                 vests = []
