@@ -1,0 +1,7 @@
+﻿folder,pipeline,helmet_acc,helmet_n,vest_acc,vest_n
+single (1인),OD,0.9409,474,0.8929,588
+single (1인),MLC,0.9156,474,0.9082,588
+crowd (3인 이상),OD,0.9331,643,0.73,889
+crowd (3인 이상),MLC,0.8958,643,0.7784,889
+전체 (overall),OD,0.9364,1117,0.7949,1477
+전체 (overall),MLC,0.9042,1117,0.8301,1477
