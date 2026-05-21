@@ -1,0 +1,24 @@
+camera:
+  device: 0
+  width: 640
+  height: 480
+
+models:
+  person_detector: yolo11n.pt
+  ppe_classifier: ""           # MobileNetV3 분류 모델 (.pth), 빈 문자열이면 비활성
+  ppe_od_model: ""             # PPE OD 모델 (best.pt), 빈 문자열이면 비활성
+  danger_detector: ""          # 위험 표지 모델, 빈 문자열이면 비활성
+
+thresholds:
+  person_confidence: 0.5
+  ppe_threshold: 0.3           # Classification sigmoid 임계값
+  ppe_od_confidence: 0.35      # OD 방식 신뢰도 임계값
+  danger_confidence: 0.45
+
+crop:
+  upper_ratio: 0.82
+  expand: 0.08
+  min_person_width: 18
+  min_person_height: 40
+  min_crop_height: 90
+  min_crop_aspect: 0.90
